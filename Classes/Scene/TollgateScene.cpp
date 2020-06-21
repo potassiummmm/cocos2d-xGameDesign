@@ -44,6 +44,7 @@ void TollgateScene::addPlayer()
 	ValueMap spawnPoint = group->getObject("hero");
 	float x = spawnPoint["x"].asFloat();
 	float y = spawnPoint["y"].asFloat();
+	
 	if(SafeMapLayer::whichPlayer()==1)
 	    m_player = Ranger::create();
 	else if(SafeMapLayer::whichPlayer() == 2)
@@ -403,6 +404,7 @@ void TollgateScene::loadListeners()
 					background->begin();
 					this->visit();
 					background->end();
+					restore.num = 1;
 					Director::getInstance()->pushScene(FinishScene::createScene(background, m_player->whichPlayer()));
 				}
 			}
@@ -757,9 +759,19 @@ void TollgateScene::update(float dt)
 					{
 						damage *= 2;
 						monster->hit(damage * m_player->getDamageBonus(), 0.0f, 1);
+						if (typeid(*m_player) == typeid(Knight) && dynamic_cast<Knight*>(m_player)->getIsInSkill())
+						{
+							monster->hit(damage * m_player->getDamageBonus(), 0.0f, 1);
+						}
 					}
 					else
+					{
 						monster->hit(damage * m_player->getDamageBonus(), 0.0f, 0);
+						if (typeid(*m_player) == typeid(Knight) && dynamic_cast<Knight*>(m_player)->getIsInSkill())
+						{
+							monster->hit(damage * m_player->getDamageBonus(), 0.0f, 0);
+						}
+					}
 				}
 			}
 			weapon->setIsHit(true);
@@ -811,9 +823,9 @@ void TollgateScene::update(float dt)
 						{
 							m_player->hit(close_weapon->getDamage());
 						}
+						close_weapon->setIsHit(true);
 					}
 				}
-				close_weapon->setIsHit(true);
 			}
 		}
 	}
